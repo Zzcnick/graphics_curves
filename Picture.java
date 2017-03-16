@@ -18,8 +18,8 @@ public class Picture {
 		if (cmd.equals("line")) {
 		    c.edge(sc.nextDouble(), sc.nextDouble(), sc.nextDouble(),
 			   sc.nextDouble(), sc.nextDouble(), sc.nextDouble());
-		} else if (cmd.equals("ident")) {
-		    c.clearTransform();
+		} else if (cmd.equals("circle")) {
+		    c.circle(sc.nextDouble(), sc.nextDouble(), sc.nextDouble(), sc.nextDouble());
 		} else if (cmd.equals("scale")) {
 		    c.scale(sc.nextDouble(), sc.nextDouble(), sc.nextDouble());
 		} else if (cmd.equals("move")) {
@@ -28,6 +28,8 @@ public class Picture {
 		    c.rotate(sc.next().charAt(0), sc.nextDouble());
 		} else if (cmd.equals("apply")) {
 		    c.apply();
+		} else if (cmd.equals("ident")) {
+		    c.clearTransform();
 		} else if (cmd.equals("draw")) {
 		    c.draw();
 		} else if (cmd.equals("save")) {

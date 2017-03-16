@@ -104,8 +104,79 @@ public class Canvas {
 	return edges;
     }
 
+    // Shapes and Curves
+    public boolean circle(double cx, double cy, double z, double r, Pixel p) {
+	double x1 = cx + r;
+	double y1 = cy;
+	double x2, y2;
+	for (double t = 0; t < 1.001; t += 0.01) {
+	    x2 = cx + r * Math.cos(t * 2 * Math.PI);
+	    y2 = cy + r * Math.sin(t * 2 * Math.PI);
+	    edge(x1, y1, z, x2, y2, z, p);
+	    x1 = x2; y1 = y2;
+	}
+	return true;
+    }
+    public boolean circle(double cx, double cy, double z, double r) {
+	return circle(cx, cy, z, r, new Pixel(0,0,0));
+    }
+
+    // Other Designs
+    public boolean triangle(int x, int y, Pixel p) {
+	int layer = 0;
+	while (y > -1) {
+	    for (int i = Math.max(0, x - layer); i < Math.min(x + layer + 1, this.x); i++) {
+		canvas[y][i] = p;
+	    }
+	    layer++; y--;
+	}
+	return true;
+    }
+
+    // EdgeMatrix Functions
+    public boolean edge(double x1, double y1, double x2, double y2) {
+	return edge(x1, y1, x2, y2, new Pixel(0,0,0));
+    }
+    public boolean edge(double x1, double y1, double x2, double y2, Pixel p) {
+	return edges.add_edge(x1, y1, x2, y2, p);
+    }
+    public boolean edge(double x1, double y1, double z1,
+			double x2, double y2, double z2) {
+	return edges.add_edge(x1, y1, z1, x2, y2, z2, new Pixel(0,0,0));
+    }
+    public boolean edge(double x1, double y1, double z1,
+			double x2, double y2, double z2, Pixel p) {
+	return edges.add_edge(x1, y1, z1, x2, y2, z2, p);
+    }
+
+    public boolean draw() {
+	Iterator<double[]> edgelist = edges.iterator();
+	Iterator<Pixel> colors = edges.colorIterator();
+	while (edgelist.hasNext()) {
+	    double[] p1 = edgelist.next();
+	    double[] p2 = edgelist.next();
+	    int x1 = (int)(p1[0]);
+	    int y1 = (int)(p1[1]);
+	    int x2 = (int)(p2[0]);
+	    int y2 = (int)(p2[1]);
+	    line(x1, y1, x2, y2, colors.next());
+	}
+	return true;
+    }
+    
+    public boolean clearEdges() {
+	edges = new Matrix();
+	return true;
+    }
+    public boolean clearTransform() {
+	transform = Matrix.identity(4);
+	return true;
+    }
+
     // Canvas Methods
     public boolean draw_pixel(int x, int y, Pixel p) {
+	if (x < 0 || x >= this.x || y < 0 || y >= this.y)
+	    return false;
 	canvas[y][x] = p;
 	return true;
     }
@@ -235,58 +306,6 @@ public class Canvas {
 	    x1++;
 	    d += A;
 	}
-	return true;
-    }
-
-    // Other Designs
-    public boolean triangle(int x, int y, Pixel p) {
-	int layer = 0;
-	while (y > -1) {
-	    for (int i = Math.max(0, x - layer); i < Math.min(x + layer + 1, this.x); i++) {
-		canvas[y][i] = p;
-	    }
-	    layer++; y--;
-	}
-	return true;
-    }
-
-    // EdgeMatrix Functions
-    public boolean edge(double x1, double y1, double x2, double y2) {
-	return edge(x1, y1, x2, y2, new Pixel(0,0,0));
-    }
-    public boolean edge(double x1, double y1, double x2, double y2, Pixel p) {
-	return edges.add_edge(x1, y1, x2, y2, p);
-    }
-    public boolean edge(double x1, double y1, double z1,
-			double x2, double y2, double z2) {
-	return edges.add_edge(x1, y1, z1, x2, y2, z2, new Pixel(0,0,0));
-    }
-    public boolean edge(double x1, double y1, double z1,
-			double x2, double y2, double z2, Pixel p) {
-	return edges.add_edge(x1, y1, z1, x2, y2, z2, p);
-    }
-
-    public boolean draw() {
-	Iterator<double[]> edgelist = edges.iterator();
-	Iterator<Pixel> colors = edges.colorIterator();
-	while (edgelist.hasNext()) {
-	    double[] p1 = edgelist.next();
-	    double[] p2 = edgelist.next();
-	    int x1 = (int)(p1[0]);
-	    int y1 = (int)(p1[1]);
-	    int x2 = (int)(p2[0]);
-	    int y2 = (int)(p2[1]);
-	    line(x1, y1, x2, y2, colors.next());
-	}
-	return true;
-    }
-    
-    public boolean clearEdges() {
-	edges = new Matrix();
-	return true;
-    }
-    public boolean clearTransform() {
-	transform = Matrix.identity(4);
 	return true;
     }
 
