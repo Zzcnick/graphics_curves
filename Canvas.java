@@ -121,6 +121,16 @@ public class Canvas {
 	return circle(cx, cy, z, r, new Pixel(0,0,0));
     }
 
+    public boolean hermite(double x0, double y0, double x1, double y1,
+			   double dx0, double dy0, double dx1, double dy1, Pixel p) {
+	// Why Use A Matrix When You Can Just Multiply?
+	double m0 = dx0 / dy0; double m1 = dx1 / dy1;
+	double ax, ay, bx, by, cx, cy, dx, dy;
+	ax = 2 * x0 - 2 * x1 + dx0 + dx1;
+	bx = 3 * x1 - 3 * x0 - 2 * dx0;
+	
+    }
+
     // Other Designs
     public boolean triangle(int x, int y, Pixel p) {
 	int layer = 0;
