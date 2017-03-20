@@ -123,12 +123,86 @@ public class Canvas {
 
     public boolean hermite(double x0, double y0, double x1, double y1,
 			   double dx0, double dy0, double dx1, double dy1, Pixel p) {
-	// Why Use A Matrix When You Can Just Multiply?
+	// Why Use A Matrix When You Can Just Multiply? Efficiency is important! 
 	double m0 = dx0 / dy0; double m1 = dx1 / dy1;
 	double ax, ay, bx, by, cx, cy, dx, dy;
 	ax = 2 * x0 - 2 * x1 + dx0 + dx1;
-	bx = 3 * x1 - 3 * x0 - 2 * dx0;
+	bx = -3 * x0 + 3 * x1 - 2 * dx0 - dx1;
+	cx = dx0;
+	dx = x0;
+	ay = 2 * y0 - 2 * y1 + dy0 + dy1;
+	by = 3 * y1 - 3 * y0 - 2 * dy0 - dy1; 
+	cy = dy0;
+	dy = y0;
+	double x = x0; double y = y0;
+	double newx, newy;
+	for (double t = 0; t < 1.001; t += 0.005) {
+	    newx = ax * t * t * t +
+		bx * t * t +
+		cx * t + 
+		dx;
+	    newy = ay * t * t * t +
+		by * t * t +
+		cy * t +
+		dy;
+	    edge(x, y, 0, newx, newy, 0, p);
+	    x = newx; y = newy;
+	}
+	return true;
+    }
+    public boolean hermite(double x0, double y0, double x1, double y1,
+			   double dx0, double dy0, double dx1, double dy1) {
+	return hermite(x0, y0, x1, y1,
+		       dx0, dy0, dx1, dy1, new Pixel(0,0,0));
+    }
+
+    public boolean bezier(double[] points) {
+	return false; // To Implement For General Bezier Curves
+    }
+    public boolean bezier(double x0, double y0,
+			  double x1, double y1,
+			  double x2, double y2,
+			  double x3, double y3, Pixel p) {
+	// Matrix Implementation For 4 Points - To Add To General Bezier Later
+	double[][] a = 
+	    {{x0, x1, x2, x3},
+	     {y0, y1, y2, y3}};
+	Matrix xy = new Matrix(a); // 4 by 2
+	double[][] b =
+	    {{-1,3,-3,1},
+	     {3,-6,3,0},
+	     {-3,3,0,0},
+	     {1,0,0,0}};
+	Matrix bz = new Matrix(b); // 4 by 4
+	bz.multiply(xy); // 4 by 2
+
+	double ax, ay, bx, by, cx, cy, dx, dy;
+	ax = bz.get(0,0); ay = bz.get(0,1);
+	bx = bz.get(1,0); by = bz.get(1,1);
+	cx = bz.get(2,0); cy = bz.get(2,1);
+	dx = bz.get(3,0); dy = bz.get(3,1);
 	
+	double x = x0; double y = y0;
+	double newx, newy;
+	for (double t = 0; t < 1.001; t += 0.005) {
+	    newx =  ax * t * t * t +
+		bx * t * t +
+		cx * t + 
+		dx;
+	    newy = ay * t * t * t +
+		by * t * t +
+		cy * t +
+		dy;
+	    edge(x, y, 0, newx, newy, 0, p);
+	    x = newx; y = newy;
+	}
+	return true;
+    }
+    public boolean bezier(double x0, double y0,
+			  double x1, double y1,
+			  double x2, double y2,
+			  double x3, double y3) {
+	return bezier(x0, y0, x1, y1, x2, y2, x3, y3, new Pixel(0,0,0));
     }
 
     // Other Designs
